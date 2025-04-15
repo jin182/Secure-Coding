@@ -3,6 +3,8 @@
 {% block content %}
 <h2>신고</h2>
 <form method="POST">
+  <!-- CSRF 토큰 추가 -->
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
   <label>신고 대상 (사용자ID or 상품ID)</label>
   <input type="text" name="target_id" required>
   <label>신고 사유</label>

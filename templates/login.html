@@ -3,6 +3,8 @@
 {% block content %}
 <h2>로그인</h2>
 <form method="POST">
+  <!-- CSRF 토큰 추가 -->
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
   <label>사용자명</label>
   <input type="text" name="username" required>
   <label>비밀번호</label>

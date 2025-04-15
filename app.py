@@ -8,6 +8,9 @@ from datetime import timedelta
 from flask import Flask, render_template, request, redirect, url_for, session, flash, g, abort
 from flask_socketio import SocketIO, send
 
+# === CSRF ===
+from flask_wtf.csrf import CSRFProtect
+
 ##############################################################################
 # 전역 설정
 ##############################################################################
@@ -18,6 +21,10 @@ app.config['SECRET_KEY'] = secrets.token_hex(32)
 
 # 세션 만료 (로그인 후 30분)
 app.permanent_session_lifetime = timedelta(minutes=30)
+
+# === CSRF ===
+# CSRFProtect 활성화
+csrf = CSRFProtect(app)
 
 DATABASE = 'market.db'
 socketio = SocketIO(app)
@@ -43,7 +50,7 @@ def close_connection(exception):
         db.close()
 
 ##############################################################################
-# DB 초기화 (테이블 생성 및 컬럼 추가)
+# DB 초기화 (테이블 생성)
 ##############################################################################
 def init_db():
     with app.app_context():
@@ -216,53 +223,44 @@ def login():
 ##############################################################################
 # 로그아웃
 ##############################################################################
-@app.route('/logout')
+@app.route('/logout', methods=['POST','GET'])
 def logout():
+    # CSRF로 보호하려면 로그아웃도 POST 방식을 선호하지만, 여기서는 GET도 허용
     session.pop(SESSION_USER_ID, None)
     flash('로그아웃되었습니다.')
     return redirect(url_for('index'))
 
 ##############################################################################
-# 대시보드 및 검색 기능
+# 대시보드
 ##############################################################################
-@app.route('/dashboard')
+@app.route('/dashboard', methods=['GET'])
+@login_required
 def dashboard():
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
-
+    user = get_current_user()
     db = get_db()
-    cursor = db.cursor()
+    cur = db.cursor()
 
-    # 현재 사용자 조회
-    cursor.execute("SELECT * FROM user WHERE id = ?", (session['user_id'],))
-    current_user = cursor.fetchone()
-
-    # 검색어 가져오기 (GET 파라미터)
-    q = request.args.get('q', '').strip()
-
+    # 검색어
+    q = request.args.get('q','').strip()
     if q:
-        # LIKE 검색용 파라미터 만들기
         like_q = f"%{q}%"
-        # 제목(title) 또는 설명(description)에 검색어가 포함된 상품만 조회
-        cursor.execute("""
-            SELECT *
+        cur.execute("""
+            SELECT * 
             FROM product
-            WHERE title LIKE ? OR description LIKE ?
+            WHERE hidden=0 AND is_sold=0
+              AND (title LIKE ? OR description LIKE ?)
             ORDER BY rowid DESC
-        """, (like_q, like_q))
-        all_products = cursor.fetchall()
+        """,(like_q, like_q))
     else:
-        # 검색어가 없으면 전체 상품 조회
-        cursor.execute("SELECT * FROM product ORDER BY rowid DESC")
-        all_products = cursor.fetchall()
+        cur.execute("""
+            SELECT * 
+            FROM product
+            WHERE hidden=0 AND is_sold=0
+            ORDER BY rowid DESC
+        """)
+    products = cur.fetchall()
 
-    return render_template(
-        'dashboard.html',
-        products=all_products,
-        user=current_user,
-        search_query=q  # 템플릿에서 검색어 표시 용도
-    )
-
+    return render_template('dashboard.html', user=user, products=products, search_query=q)
 
 ##############################################################################
 # 프로필
@@ -313,21 +311,20 @@ def new_product():
         title_escaped = html.escape(title)
         desc_escaped = html.escape(desc)
 
-        product_id = str(uuid.uuid4())
+        pid = str(uuid.uuid4())
         cur.execute("""
             INSERT INTO product (id, title, description, price, seller_id)
             VALUES (?, ?, ?, ?, ?)
-        """,(product_id, title_escaped, desc_escaped, price, user['id']))
+        """,(pid, title_escaped, desc_escaped, price, user['id']))
         db.commit()
         flash('상품이 등록되었습니다.')
         return redirect(url_for('dashboard'))
-
     return render_template('new_product.html', user=user)
 
 ##############################################################################
 # 상품 상세
 ##############################################################################
-@app.route('/product/<product_id>')
+@app.route('/product/<product_id>', methods=['GET'])
 @login_required
 def view_product(product_id):
     db = get_db()
@@ -572,11 +569,6 @@ def handle_send_message_event(data):
     safe_msg = html.escape(msg)
     data['message'] = safe_msg
     send(data, broadcast=True)
-
-##############################################################################
-# 상품 검색
-##############################################################################
-
 
 ##############################################################################
 # 메인

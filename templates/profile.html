@@ -5,6 +5,8 @@
 <p><strong>사용자명</strong>: {{ user.username }}</p>
 <p>현재 소개글: {{ user.bio }}</p>
 <form method="POST">
+  <!-- CSRF 토큰 추가 -->
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
   <label>소개글 수정</label>
   <textarea name="bio" rows="4">{{ user.bio or '' }}</textarea>
   <button type="submit">업데이트</button>

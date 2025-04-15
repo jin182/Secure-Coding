@@ -22,6 +22,8 @@
     <td>{{ user.balance }}</td>
     <td>
       <form action="{{ url_for('admin_toggle_user_active', user_id=user.id) }}" method="POST">
+        <!-- CSRF 토큰 추가 -->
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <button type="submit">활성/정지</button>
       </form>
     </td>

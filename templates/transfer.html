@@ -6,6 +6,8 @@
   <p>내 잔액: {{ user.balance }} 포인트</p>
 {% endif %}
 <form method="POST">
+  <!-- CSRF 토큰 추가 -->
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
   <label>수신인 사용자명</label>
   <input type="text" name="receiver" required>
   <label>송금액</label>

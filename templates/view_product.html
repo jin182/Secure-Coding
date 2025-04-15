@@ -15,6 +15,8 @@
   <p style="color: red;">이미 판매완료된 상품입니다.</p>
 {% else %}
   <form action="{{ url_for('purchase_product', product_id=product.id) }}" method="POST">
+    <!-- CSRF 토큰 추가 -->
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <button type="submit">구매하기</button>
   </form>
 {% endif %}
