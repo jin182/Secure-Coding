@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}사용자 관리{% endblock %}
+{% block content %}
+<h2>사용자 목록</h2>
+<table style="width:100%; border-collapse: collapse;">
+  <tr>
+    <th>ID</th>
+    <th>사용자명</th>
+    <th>Bio</th>
+    <th>관리자 여부</th>
+    <th>활성 상태</th>
+    <th>포인트</th>
+    <th>작업</th>
+  </tr>
+  {% for user in all_users %}
+  <tr>
+    <td>{{ user.id }}</td>
+    <td>{{ user.username }}</td>
+    <td>{{ user.bio }}</td>
+    <td>{{ "예" if user.is_admin == 1 else "아니오" }}</td>
+    <td>{{ "활성" if user.is_active == 1 else "정지" }}</td>
+    <td>{{ user.balance }}</td>
+    <td>
+      <form action="{{ url_for('admin_toggle_user_active', user_id=user.id) }}" method="POST">
+        <button type="submit">활성/정지</button>
+      </form>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}

@@ -1,11 +1,12 @@
 {% extends "base.html" %}
 {% block title %}프로필{% endblock %}
 {% block content %}
-<h2>프로필 관리</h2>
-<p>사용자명: {{ user.username }}</p>
-<form method="post">
-  소개글: <br>
-  <textarea name="bio" rows="4" cols="50">{{ user.bio or '' }}</textarea><br>
-  <button type="submit">프로필 업데이트</button>
+<h2>프로필 수정</h2>
+<p><strong>사용자명</strong>: {{ user.username }}</p>
+<p>현재 소개글: {{ user.bio }}</p>
+<form method="POST">
+  <label>소개글 수정</label>
+  <textarea name="bio" rows="4">{{ user.bio or '' }}</textarea>
+  <button type="submit">업데이트</button>
 </form>
 {% endblock %}

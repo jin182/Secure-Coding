@@ -1,88 +1,43 @@
+<!-- templates/base.html -->
 <!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>{% block title %}My Market{% endblock %}</title>
-  <!-- Socket.IO 클라이언트 라이브러리 -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+  <title>{% block title %}Tiny Market{% endblock %}</title>
+  <script src="https://cdn.jsdelivr.net/npm/socket.io@4.5.0/dist/socket.io.min.js"></script>
   <style>
-    /* Notion 스타일 미니멀 디자인 */
     body {
-      background-color: #F7F7F7;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      color: #333;
+      margin: 0; padding: 0;
+      font-family: sans-serif; color: #333;
+      background: #f7f7f7;
     }
     nav {
-      background-color: #fff;
-      padding: 20px;
-      border-bottom: 1px solid #e0e0e0;
+      background: #fff;
+      padding: 1rem;
+      border-bottom: 1px solid #ccc;
     }
-    nav a {
-      text-decoration: none;
-      color: #555;
-      margin-right: 15px;
-      font-weight: 500;
-    }
+    nav a { text-decoration: none; color: #333; margin-right: 1rem; }
     .container {
-      max-width: 800px;
-      margin: 40px auto;
-      background-color: #fff;
-      padding: 40px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-      border-radius: 8px;
-    }
-    h1, h2, h3 {
-      font-weight: 600;
-      margin-bottom: 20px;
-    }
-    input, textarea, button {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 20px;
-      border: 1px solid #e0e0e0;
-      border-radius: 4px;
-      font-size: 16px;
-    }
-    button {
-      background-color: #007AFF;
-      color: #fff;
-      border: none;
-      cursor: pointer;
-      transition: background-color 0.2s;
-    }
-    button:hover {
-      background-color: #005BB5;
-    }
-    ul {
-      list-style: none;
-      padding: 0;
-    }
-    li {
-      padding: 10px;
-      border-bottom: 1px solid #e0e0e0;
+      max-width: 800px; margin: 2rem auto; background: #fff;
+      padding: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      border-radius: 6px;
     }
     .flash {
-      background-color: #FFECB3;
-      padding: 10px;
-      border: 1px solid #FFB74D;
+      background: #ffeeba;
+      border: 1px solid #ffc107;
+      padding: 1rem;
       border-radius: 4px;
-      margin-bottom: 20px;
+      margin-bottom: 1rem;
     }
-    /* 채팅 영역 스타일 */
-    #chat {
-      margin-top: 40px;
+    input, button, textarea {
+      width: 100%; padding: 0.5rem;
+      margin-bottom: 1rem; border: 1px solid #ccc; border-radius: 4px;
     }
-    #messages {
-      height: 200px;
-      overflow-y: auto;
-      border: 1px solid #e0e0e0;
-      padding: 10px;
-      border-radius: 4px;
-      margin-bottom: 10px;
-      background-color: #fafafa;
-    }
+    button { background: #007bff; color: #fff; border: none; cursor: pointer; }
+    button:hover { background: #0056b3; }
+    .btn { display:inline-block; text-decoration: none; padding:0.4rem 1rem; color:#fff; background:#28a745; border-radius:4px; }
+    .btn:hover { background: #218838; }
+    #messages { border:1px solid #ddd; height:180px; overflow-y:auto; border-radius:4px; padding:0.5rem; background:#fafafa; }
   </style>
 </head>
 <body>
@@ -90,8 +45,12 @@
     {% if session.get('user_id') %}
       <a href="{{ url_for('dashboard') }}">대시보드</a>
       <a href="{{ url_for('profile') }}">프로필</a>
-      <a href="{{ url_for('report') }}">신고하기</a>
+      <a href="{{ url_for('report') }}">신고</a>
+      <a href="{{ url_for('transfer') }}">송금</a>
       <a href="{{ url_for('logout') }}">로그아웃</a>
+      {% if user and user.is_admin == 1 %}
+        <a href="{{ url_for('admin_index') }}">[관리자]</a>
+      {% endif %}
     {% else %}
       <a href="{{ url_for('login') }}">로그인</a>
       <a href="{{ url_for('register') }}">회원가입</a>
@@ -100,11 +59,9 @@
   <div class="container">
     {% with messages = get_flashed_messages() %}
       {% if messages %}
-        <ul>
-          {% for message in messages %}
-            <li class="flash">{{ message }}</li>
-          {% endfor %}
-        </ul>
+        {% for m in messages %}
+          <div class="flash">{{ m }}</div>
+        {% endfor %}
       {% endif %}
     {% endwith %}
     {% block content %}{% endblock %}
