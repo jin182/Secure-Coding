@@ -5,11 +5,11 @@ conn = sqlite3.connect('market.db')
 cursor = conn.cursor()
 
 # admin 권한 부여 (is_admin=1)
-cursor.execute("UPDATE user SET is_admin=1 WHERE username='Lay'")
+cursor.execute("UPDATE user SET is_admin=1 WHERE username='USERNAME'")
 conn.commit()
 
 # 확인
-cursor.execute("SELECT id, username, is_admin FROM user WHERE username='Lay'")
+cursor.execute("SELECT id, username, is_admin FROM user WHERE username='USERNAME'")
 print(cursor.fetchone())
 
 conn.close()
