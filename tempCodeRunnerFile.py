@@ -223,24 +223,46 @@ def logout():
     return redirect(url_for('index'))
 
 ##############################################################################
-# 대시보드
+# 대시보드 및 검색 기능
 ##############################################################################
 @app.route('/dashboard')
-@login_required
 def dashboard():
-    user = get_current_user()
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
     db = get_db()
-    cur = db.cursor()
+    cursor = db.cursor()
 
-    # 상품 목록 (hidden=0, is_sold=0 만 표시)
-    cur.execute("""
-        SELECT * FROM product
-        WHERE hidden=0 AND is_sold=0
-        ORDER BY rowid DESC
-    """)
-    products = cur.fetchall()
+    # 현재 사용자 조회
+    cursor.execute("SELECT * FROM user WHERE id = ?", (session['user_id'],))
+    current_user = cursor.fetchone()
 
-    return render_template('dashboard.html', user=user, products=products)
+    # 검색어 가져오기 (GET 파라미터)
+    q = request.args.get('q', '').strip()
+
+    if q:
+        # LIKE 검색용 파라미터 만들기
+        like_q = f"%{q}%"
+        # 제목(title) 또는 설명(description)에 검색어가 포함된 상품만 조회
+        cursor.execute("""
+            SELECT *
+            FROM product
+            WHERE title LIKE ? OR description LIKE ?
+            ORDER BY rowid DESC
+        """, (like_q, like_q))
+        all_products = cursor.fetchall()
+    else:
+        # 검색어가 없으면 전체 상품 조회
+        cursor.execute("SELECT * FROM product ORDER BY rowid DESC")
+        all_products = cursor.fetchall()
+
+    return render_template(
+        'dashboard.html',
+        products=all_products,
+        user=current_user,
+        search_query=q  # 템플릿에서 검색어 표시 용도
+    )
+
 
 ##############################################################################
 # 프로필
@@ -550,6 +572,11 @@ def handle_send_message_event(data):
     safe_msg = html.escape(msg)
     data['message'] = safe_msg
     send(data, broadcast=True)
+
+##############################################################################
+# 상품 검색
+##############################################################################
+
 
 ##############################################################################
 # 메인
