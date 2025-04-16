@@ -575,6 +575,6 @@ def handle_send_message_event(data):
 ##############################################################################
 if __name__ == '__main__':
     if not os.path.exists(DATABASE):
-        print("market.db가 없으므로 새로 생성합니다.")
+        print("db가 없으므로 새로 생성합니다.")
     init_db()
     socketio.run(app, host='0.0.0.0', port=5000, debug=True)
