@@ -1,70 +1,136 @@
-<!-- templates/base.html -->
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-  <meta charset="UTF-8">
-  <title>{% block title %}Tiny Market{% endblock %}</title>
-  <script src="https://cdn.jsdelivr.net/npm/socket.io@4.5.0/dist/socket.io.min.js"></script>
-  <style>
-    body {
-      margin: 0; padding: 0;
-      font-family: sans-serif; color: #333;
-      background: #f7f7f7;
-    }
-    nav {
-      background: #fff;
-      padding: 1rem;
+<!-- templates/base.html --> 
+<!DOCTYPE html> 
+<html lang="ko"> 
+<head>   
+  <meta charset="UTF-8">   
+  <title>{% block title %}Tiny Market{% endblock %}</title>   
+  <script src="https://cdn.jsdelivr.net/npm/socket.io@4.5.0/dist/socket.io.min.js"></script>   
+  <style>     
+    body {       
+      margin: 0; 
+      padding: 0;       
+      font-family: sans-serif; 
+      color: #333;       
+      background: #f7f7f7;     
+    }     
+    nav {       
+      background: #fff;       
+      padding: 1rem;       
       border-bottom: 1px solid #ccc;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }     
+    nav a { 
+      text-decoration: none; 
+      color: #333; 
+      margin-right: 1rem; 
+      padding: 0.4rem 0.8rem;
     }
-    nav a { text-decoration: none; color: #333; margin-right: 1rem; }
-    .container {
-      max-width: 800px; margin: 2rem auto; background: #fff;
-      padding: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      border-radius: 6px;
+    nav a:hover {
+      color: #007bff;
     }
-    .flash {
-      background: #ffeeba;
-      border: 1px solid #ffc107;
-      padding: 1rem;
-      border-radius: 4px;
-      margin-bottom: 1rem;
+    .nav-button {
+      background: none;
+      border: none;
+      color: #333;
+      cursor: pointer;
+      font-size: 1rem;
+      padding: 0.4rem 0.8rem;
+      margin: 0;
+      width: auto;
     }
-    input, button, textarea {
-      width: 100%; padding: 0.5rem;
-      margin-bottom: 1rem; border: 1px solid #ccc; border-radius: 4px;
+    .nav-button:hover {
+      color: #007bff;
+      background: none;
     }
-    button { background: #007bff; color: #fff; border: none; cursor: pointer; }
-    button:hover { background: #0056b3; }
-    .btn { display:inline-block; text-decoration: none; padding:0.4rem 1rem; color:#fff; background:#28a745; border-radius:4px; }
-    .btn:hover { background: #218838; }
-    #messages { border:1px solid #ddd; height:180px; overflow-y:auto; border-radius:4px; padding:0.5rem; background:#fafafa; }
-  </style>
-</head>
-<body>
+    .container {       
+      max-width: 800px; 
+      margin: 2rem auto; 
+      background: #fff;       
+      padding: 2rem; 
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);       
+      border-radius: 6px;     
+    }     
+    .flash {       
+      background: #ffeeba;       
+      border: 1px solid #ffc107;       
+      padding: 1rem;       
+      border-radius: 4px;       
+      margin-bottom: 1rem;     
+    }     
+    input, button, textarea {       
+      width: 100%; 
+      padding: 0.5rem;       
+      margin-bottom: 1rem; 
+      border: 1px solid #ccc; 
+      border-radius: 4px;     
+    }     
+    button { 
+      background: #007bff; 
+      color: #fff; 
+      border: none; 
+      cursor: pointer; 
+    }     
+    button:hover { 
+      background: #0056b3; 
+    }     
+    .btn { 
+      display:inline-block; 
+      text-decoration: none; 
+      padding:0.4rem 1rem; 
+      color:#fff; 
+      background:#28a745; 
+      border-radius:4px; 
+    }     
+    .btn:hover { 
+      background: #218838; 
+    }     
+    #messages { 
+      border:1px solid #ddd; 
+      height:180px; 
+      overflow-y:auto; 
+      border-radius:4px; 
+      padding:0.5rem; 
+      background:#fafafa; 
+    }   
+  </style> 
+</head> 
+<body>  
   <nav>
-    {% if session.get('user_id') %}
-      <a href="{{ url_for('dashboard') }}">대시보드</a>
-      <a href="{{ url_for('profile') }}">프로필</a>
-      <a href="{{ url_for('report') }}">신고</a>
-      <a href="{{ url_for('transfer') }}">송금</a>
-      <a href="{{ url_for('logout') }}">로그아웃</a>
-      {% if user and user.is_admin == 1 %}
-        <a href="{{ url_for('admin_index') }}">[관리자]</a>
+    <!-- 브랜드/로고 영역 - 항상 표시 -->
+    <a href="{{ url_for('index') }}" style="font-weight: bold;">Tiny Market</a>
+    
+    <!-- 로그인 했을 때만 표시되는 메뉴 -->
+    {% if session.get('user_id') %}     
+      <a href="{{ url_for('dashboard') }}">대시보드</a>     
+      <a href="{{ url_for('profile') }}">프로필</a>     
+      <a href="{{ url_for('report') }}">신고</a>     
+      <a href="{{ url_for('transfer') }}">송금</a>     
+      <form action="{{ url_for('logout') }}" method="POST" style="display:inline; margin:0;">       
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">       
+        <button type="submit" class="nav-button">로그아웃</button>     
+      </form>     
+      {% if user and user.is_admin == 1 %}       
+        <a href="{{ url_for('admin_index') }}">[관리자]</a>     
       {% endif %}
-    {% else %}
-      <a href="{{ url_for('login') }}">로그인</a>
-      <a href="{{ url_for('register') }}">회원가입</a>
-    {% endif %}
-  </nav>
-  <div class="container">
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        {% for m in messages %}
-          <div class="flash">{{ m }}</div>
-        {% endfor %}
-      {% endif %}
-    {% endwith %}
-    {% block content %}{% endblock %}
-  </div>
-</body>
+      
+    <!-- 로그인 안 했을 때만 표시되는 메뉴 -->
+    {% else %}     
+      <a href="{{ url_for('login') }}">로그인</a>     
+      <a href="{{ url_for('register') }}">회원가입</a>   
+    {% endif %} 
+  </nav>    
+  
+  <div class="container">     
+    {% with messages = get_flashed_messages() %}       
+      {% if messages %}         
+        {% for m in messages %}           
+          <div class="flash">{{ m }}</div>         
+        {% endfor %}       
+      {% endif %}     
+    {% endwith %}     
+    {% block content %}{% endblock %}   
+  </div> 
+</body> 
 </html>
