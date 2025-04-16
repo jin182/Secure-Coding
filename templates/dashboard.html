@@ -5,11 +5,14 @@
 {% if user %}
   <p>{{ user.username }} 님 (잔액: {{ user.balance }} 포인트)</p>
 {% endif %}
+
+<!-- 검색 -->
 <form method="GET" action="{{ url_for('dashboard') }}">
   <input type="text" name="q" placeholder="상품 검색어" value="{{ search_query|default('') }}">
   <button type="submit">검색</button>
 </form>
 
+<!-- 상품 목록 -->
 <h3>등록된 상품 목록</h3>
 {% if products %}
   <ul>
@@ -28,31 +31,38 @@
   <a class="btn" href="{{ url_for('new_product') }}">상품 등록하기</a>
 </p>
 
+<!-- 실시간 채팅 -->
 <h3>실시간 채팅</h3>
 <div id="chat">
-  <ul id="messages"></ul>
+  <ul id="messages" style="height: 200px; overflow-y: scroll; background: #f8f8f8; padding: 10px;"></ul>
   <input id="chat_input" type="text" placeholder="메시지 입력">
   <button onclick="sendMessage()">전송</button>
 </div>
+
+<!-- Socket.IO 클라이언트 -->
+<script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script>
 <script>
-  var socket = io();
-  socket.on('connect', function(){
+  const socket = io();
+
+  socket.on('connect', function() {
     console.log("채팅 서버 연결됨");
   });
-  socket.on('message', function(data){
-    var messages = document.getElementById('messages');
-    var li = document.createElement('li');
-    var sender = data.username ? data.username : '익명';
+
+  socket.on('message', function(data) {
+    const messages = document.getElementById('messages');
+    const li = document.createElement('li');
+    const sender = data.username ? data.username : '익명';
     li.textContent = sender + ": " + data.message;
     messages.appendChild(li);
     messages.scrollTop = messages.scrollHeight;
   });
-  function sendMessage(){
-    var input = document.getElementById('chat_input');
-    var msg = input.value;
-    if(msg){
+
+  function sendMessage() {
+    const input = document.getElementById('chat_input');
+    const msg = input.value.trim();
+    if (msg) {
       socket.emit('send_message', {
-        username: "{{ user.username if user else '' }}",
+        username: "{{ user.username if user else '익명' }}",
         message: msg
       });
       input.value = "";

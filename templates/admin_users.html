@@ -22,7 +22,6 @@
     <td>{{ user.balance }}</td>
     <td>
       <form action="{{ url_for('admin_toggle_user_active', user_id=user.id) }}" method="POST">
-        <!-- CSRF 토큰 추가 -->
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <button type="submit">활성/정지</button>
       </form>
@@ -30,4 +29,9 @@
   </tr>
   {% endfor %}
 </table>
+
+<!-- ✅ 관리자 홈으로 돌아가기 버튼 -->
+<p style="margin-top: 20px;">
+  <a href="{{ url_for('admin_index') }}" class="btn">관리자 홈으로 돌아가기</a>
+</p>
 {% endblock %}

@@ -22,12 +22,10 @@
     <td>{{ "숨김" if product.hidden == 1 else "노출" }}</td>
     <td>
       <form action="{{ url_for('admin_toggle_product_hidden', product_id=product.id) }}" method="POST">
-        <!-- CSRF 토큰 추가 -->
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <button type="submit">숨김/노출</button>
       </form>
       <form action="{{ url_for('admin_delete_product', product_id=product.id) }}" method="POST">
-        <!-- CSRF 토큰 추가 -->
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <button type="submit">삭제</button>
       </form>
@@ -35,4 +33,9 @@
   </tr>
   {% endfor %}
 </table>
+
+<!-- 돌아가기 버튼 -->
+<p style="margin-top: 20px;">
+  <a href="{{ url_for('admin_index') }}" class="btn">관리자 홈으로 돌아가기</a>
+</p>
 {% endblock %}
