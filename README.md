@@ -1,7 +1,7 @@
 # Tiny Secondhand Shopping Platform
 
 화이트햇 스쿨 3기 시큐어 코딩 과제  
-레포지토리: [https://github.com/jin182/WHS3-Secure-Coding.git](https://github.com/jin182/WHS3-Secure-Coding.git)
+레포지토리: [https://github.com/jin182/Secure-Coding.git](https://github.com/jin182/Secure-Coding.git)
 
 ---
 
