@@ -30,8 +30,8 @@ source ~/.bashrc
 ## ⚙️ 프로젝트 환경 설정
 
 ```bash
-git clone https://github.com/jin182/WHS3-Secure-Coding.git
-cd WHS3-Secure-Coding
+git clone https://github.com/jin182/Secure-Coding.git
+cd Secure-Coding
 
 conda create -n secure_coding python=3.11
 conda activate secure_coding
