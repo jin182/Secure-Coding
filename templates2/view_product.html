@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}상품 상세보기{% endblock %}
+{% block content %}
+<h2>{{ product.title }}</h2>
+
+<p><strong>설명:</strong><br>{{ product.description }}</p>
+<p><strong>가격:</strong> {{ product.price }} 원</p>
+<p><strong>판매자:</strong> {{ seller.username if seller else '알 수 없음' }}</p>
+
+{% if session.get('user_id') != product.seller_id and product.is_sold == 0 %}
+  <form method="post" action="{{ url_for('buy_product', product_id=product.id) }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <button type="submit">💰 구매하기 (₩{{ product.price }})</button>
+  </form>
+{% elif product.is_sold %}
+  <p style="color: red;"><strong>이 상품은 이미 판매 완료되었습니다.</strong></p>
+{% endif %}
+
+{% if session.get('user_id') != product.seller_id %}
+  <form method="post" action="{{ url_for('report') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="target_id" value="{{ product.id }}">
+    <input type="hidden" name="reason" value="불량 상품 신고">
+    <button type="submit">🚫 이 상품 신고하기</button>
+  </form>
+{% endif %}
+{% endblock %}

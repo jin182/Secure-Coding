@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Secure Second-hand Marketplace with Chat & Reporting">
+  <title>{% block title %}My Market{% endblock %}</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+  <style>
+    body {
+      background-color: #F7F7F7;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+    nav {
+      background-color: #fff;
+      padding: 20px;
+      border-bottom: 1px solid #e0e0e0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    nav .left a, nav .right a {
+      text-decoration: none;
+      color: #555;
+      margin-right: 15px;
+      font-weight: 500;
+    }
+    nav .right {
+      margin-left: auto;
+    }
+    .container {
+      max-width: 800px;
+      margin: 40px auto;
+      background-color: #fff;
+      padding: 40px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      border-radius: 8px;
+    }
+    h1, h2, h3 {
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+    input, textarea, button {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 20px;
+      border: 1px solid #e0e0e0;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+    button {
+      background-color: #007AFF;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    button:hover {
+      background-color: #005BB5;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      padding: 10px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    .flash {
+      background-color: #FFECB3;
+      padding: 10px;
+      border: 1px solid #FFB74D;
+      border-radius: 4px;
+      margin-bottom: 20px;
+    }
+    footer {
+      text-align: center;
+      color: #999;
+      font-size: 14px;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="left">
+      <a href="{{ url_for('index') }}"><strong>🏠 My Market</strong></a>
+    </div>
+    <div class="right">
+      {% if session.get('user_id') %}
+        <a href="{{ url_for('dashboard') }}">대시보드</a>
+        <a href="{{ url_for('profile') }}">프로필</a>
+        <a href="{{ url_for('user_list') }}">사용자 목록</a>
+        <a href="{{ url_for('my_purchases') }}">🛍️ 내 구매내역</a>
+        <a href="{{ url_for('my_sales') }}">💸 내 판매내역</a>
+        <a href="{{ url_for('report') }}">신고</a>
+        <a href="{{ url_for('logout') }}">로그아웃</a>
+      {% else %}
+        <a href="{{ url_for('login') }}">로그인</a>
+        <a href="{{ url_for('register') }}">회원가입</a>
+      {% endif %}
+    </div>
+  </nav>
+
+  <div class="container">
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul>
+          {% for message in messages %}
+            <li class="flash">{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </div>
+
+  <footer>
+    &copy; 2025 Secure Market Platform. All rights reserved.
+  </footer>
+</body>
+</html>

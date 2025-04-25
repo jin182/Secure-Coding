@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block title %}관리자 페이지{% endblock %}
+{% block content %}
+<h2>📈 관리자 페이지</h2>
+
+<!-- 탭 버튼 메뉴 -->
+<div>
+  <button onclick="showTab('tab_users')">사용자 관리</button>
+  <button onclick="showTab('tab_products')">상품 관리</button>
+  <button onclick="showTab('tab_reports')">신고 확인</button>
+</div>
+
+<hr>
+
+<!-- 사용자 관리 탭 -->
+<div id="tab_users" class="admin-tab" style="display:none">
+  <h3>전체 사용자 목록</h3>
+  <ul>
+    {% for user in all_users %}
+      <li>
+        <strong>{{ user.username }}</strong> | 휴먼: {{ 'O' if not user.is_active else 'X' }} | 배달: {{ user.balance }}
+        {% if user.is_active %}
+          <form method="post" action="{{ url_for('admin_block_user', user_id=user.id) }}" style="display:inline">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit">휴먼화</button>
+          </form>
+        {% else %}
+          <form method="post" action="{{ url_for('admin_unblock_user', user_id=user.id) }}" style="display:inline">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit">휴먼 해제</button>
+          </form>
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+</div>
+
+<!-- 상품 관리 탭 -->
+<div id="tab_products" class="admin-tab" style="display:none">
+  <h3>전체 상품 목록</h3>
+  <ul>
+    {% for product in all_products %}
+      <li>
+        <strong>{{ product.title }}</strong> | 가격: {{ product.price }} | 판매: {% if product.is_sold %}건{% else %}중{% endif %} | 차단: {{ product.is_blocked }}
+        {% if product.is_blocked %}
+          <form method="post" action="{{ url_for('admin_unblock_product', product_id=product.id) }}" style="display:inline">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit">차단 해제</button>
+          </form>
+        {% else %}
+          <form method="post" action="{{ url_for('admin_block_product', product_id=product.id) }}" style="display:inline">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit">차단</button>
+          </form>
+        {% endif %}
+        <form method="post" action="{{ url_for('admin_delete_product', product_id=product.id) }}" style="display:inline">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit">삭제</button>
+        </form>
+      </li>
+    {% endfor %}
+  </ul>
+</div>
+
+<!-- 신고 확인 탭 -->
+<div id="tab_reports" class="admin-tab">
+  <h3>신고 받은 사용자</h3>
+  <ul>
+    {% for user in reported_users %}
+      <li>
+        <strong>{{ user.username }}</strong> — 신고 {{ user.report_count }}회
+        {% if user.is_active %}
+          <form method="post" action="{{ url_for('admin_block_user', user_id=user.id) }}" style="display:inline">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit">휴먼화</button>
+          </form>
+        {% else %}
+          <form method="post" action="{{ url_for('admin_unblock_user', user_id=user.id) }}" style="display:inline">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit">휴먼 해제</button>
+          </form>
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+
+  <h3>신고 받은 상품</h3>
+  <ul>
+    {% for product in reported_products %}
+      <li>
+        <strong>{{ product.title }}</strong> — 신고 {{ product.report_count }}회
+        {% if product.is_blocked %}
+          <form method="post" action="{{ url_for('admin_unblock_product', product_id=product.id) }}" style="display:inline">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit">차단 해제</button>
+          </form>
+        {% else %}
+          <form method="post" action="{{ url_for('admin_block_product', product_id=product.id) }}" style="display:inline">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit">차단</button>
+          </form>
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+</div>
+
+<script>
+  function showTab(tabId) {
+    document.querySelectorAll('.admin-tab').forEach(t => t.style.display = 'none');
+    document.getElementById(tabId).style.display = 'block';
+  }
+  showTab('tab_reports'); // 기본 탭
+</script>
+{% endblock %}

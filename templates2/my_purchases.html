@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}구매 내역{% endblock %}
+{% block content %}
+<h2>💼 구매 내역</h2>
+
+{% if purchases %}
+<ul>
+  {% for item in purchases %}
+    <li>
+      👉 <strong>{{ item.title }}</strong> — 일반가: {{ item.price }}원<br>
+      👤 판매자: {{ item.seller_name }}
+    </li>
+  {% endfor %}
+</ul>
+{% else %}
+  <p>구매한 상품이 없습니다.</p>
+{% endif %}
+
+{% endblock %}

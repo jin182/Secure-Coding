@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}사용자 정보{% endblock %}
+{% block content %}
+<h2>{{ user.username }}님의 프로필</h2>
+
+{% if user.bio %}
+  <p><strong>소개글:</strong></p>
+  <p>{{ user.bio }}</p>
+{% else %}
+  <p>소개글이 없습니다.</p>
+{% endif %}
+
+<hr>
+
+{% if session.get('user_id') != user.id %}
+  <form method="get" action="{{ url_for('chat_private', target_id=user.id) }}">
+    <button type="submit">1:1 채팅 시작하기</button>
+  </form>
+
+  <form method="post" action="{{ url_for('report') }}">
+    {{ csrf_token() }}
+    <input type="hidden" name="target_id" value="{{ user.id }}">
+    <input type="hidden" name="reason" value="불량 사용자 신고">
+    <button type="submit">사용자 신고하기</button>
+  </form>
+{% endif %}
+{% endblock %}

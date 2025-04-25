@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}판매 내역{% endblock %}
+{% block content %}
+<h2>💰 판매 내역</h2>
+
+{% if sales %}
+<ul>
+  {% for item in sales %}
+    <li>
+      👉 <strong>{{ item.title }}</strong> — 판매가: {{ item.price }}원
+    </li>
+  {% endfor %}
+</ul>
+{% else %}
+  <p>판매된 상품이 없습니다.</p>
+{% endif %}
+
+{% endblock %}

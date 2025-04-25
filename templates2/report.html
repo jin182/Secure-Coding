@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}신고하기{% endblock %}
+{% block content %}
+<h2>사용자 또는 상품 신고</h2>
+
+<form method="post">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+  <label for="target_id">신고 대상 ID (사용자 ID 또는 상품 ID)</label>
+  <input type="text" name="target_id" id="target_id" placeholder="ID 입력" required>
+
+  <label for="reason">신고 사유</label>
+  <textarea name="reason" id="reason" rows="4" placeholder="신고 사유를 입력해주세요" required></textarea>
+
+  <button type="submit">신고하기</button>
+</form>
+
+<p style="font-size: 0.9em; color: #777;">
+  ※ 신고 대상 ID는 상품 상세 페이지나 유저 정보에서 확인할 수 있습니다.
+</p>
+{% endblock %}

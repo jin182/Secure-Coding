@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}환영합니다{% endblock %}
+{% block content %}
+<h1>My Market에 오신 것을 환영합니다 🛍️</h1>
+
+<p>중고 거래, 지금 시작해보세요.</p>
+
+<div style="margin-top: 30px;">
+  <a href="{{ url_for('login') }}"><button>로그인</button></a>
+  <a href="{{ url_for('register') }}"><button>회원가입</button></a>
+</div>
+{% endblock %}

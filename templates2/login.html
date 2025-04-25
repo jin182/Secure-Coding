@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}로그인{% endblock %}
+{% block content %}
+<h2>로그인</h2>
+
+<form method="post">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+  <label for="username">사용자명</label>
+  <input type="text" name="username" id="username" placeholder="아이디를 입력하세요" required>
+
+  <label for="password">비밀번호</label>
+  <input type="password" name="password" id="password" placeholder="비밀번호를 입력하세요" required>
+
+  <button type="submit">로그인</button>
+</form>
+
+<p>계정이 없으신가요? <a href="{{ url_for('register') }}">회원가입</a></p>
+{% endblock %}
