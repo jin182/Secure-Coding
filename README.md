@@ -1,4 +1,5 @@
 # Tiny Secondhand Shopping Platform
+24페이지 코드는 완전히 다시 구축하였습니다 ㅠㅠㅠ 오류가 너무 많이 니서 그래도 GPT4.5와 GROK을 돌려서 사용하니 빨리 끝났습니다 
 
 화이트햇 스쿨 3기 시큐어 코딩 과제  
 레포지토리: [https://github.com/jin182/Secure-Coding.git](https://github.com/jin182/Secure-Coding.git)
